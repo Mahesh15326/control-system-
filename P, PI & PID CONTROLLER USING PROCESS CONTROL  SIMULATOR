@@ -1,0 +1,64 @@
+clc;
+clear;
+close;
+
+// Define Laplace variable
+s = %s;
+
+// Define Plant Transfer Function
+// G(s) = 1 / (s^2 + 5s + 6)
+plant = syslin('c', 1/(s^2 + 5*s + 6));
+
+// Time vector
+t = 0:0.01:10;
+
+// ----------------------------
+// P Controller
+// ----------------------------
+Kp = 5;
+
+P_controller = Kp;
+
+P_system = feedback(P_controller * plant, 1);
+
+y1 = csim('step', t, P_system);
+
+// ----------------------------
+// PI Controller
+// ----------------------------
+Kp = 5;
+Ki = 2;
+
+PI_controller = Kp + Ki/s;
+
+PI_system = feedback(PI_controller * plant, 1);
+
+y2 = csim('step', t, PI_system);
+
+// ----------------------------
+// PID Controller
+// ----------------------------
+Kp = 5;
+Ki = 2;
+Kd = 1;
+
+PID_controller = Kp + Ki/s + Kd*s;
+
+PID_system = feedback(PID_controller * plant, 1);
+
+y3 = csim('step', t, PID_system);
+
+// ----------------------------
+// Plot Results
+// ----------------------------
+plot(t, y1, 'r');
+plot(t, y2, 'g');
+plot(t, y3, 'b');
+
+legend("P Controller", "PI Controller", "PID Controller");
+
+xlabel("Time (seconds)");
+ylabel("Output");
+title("Comparison of P, PI and PID Controllers");
+
+xgrid();
